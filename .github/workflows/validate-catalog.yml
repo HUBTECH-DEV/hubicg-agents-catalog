@@ -1,0 +1,22 @@
+name: catalog-policy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: catalog-policy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  catalog-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate public catalog boundary and provenance
+        run: python tools/validate_catalog.py

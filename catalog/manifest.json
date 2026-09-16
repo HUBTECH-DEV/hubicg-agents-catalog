@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "1.0",
+  "catalogVersion": "1.0.0",
+  "publishedAt": "2026-09-16",
+  "license": "AGPL-3.0-only",
+  "entries": [
+    {
+      "type": "agent",
+      "id": "git-devops",
+      "path": "catalog/agents/git-devops.json",
+      "classification": "community",
+      "license": "AGPL-3.0-only",
+      "contentSha256": "0339bacdd340410d53b8c272b88ec219706354c8a9aaaa2b4d063bfe14d28598",
+      "sourceRepository": "HUBTECH-DEV/hubicg-community",
+      "sourceVisibility": "public",
+      "sourcePath": ".hubicg/roles/git-devops.json",
+      "sourceCommitSha": "96571dd232d3ce744705c76b5062aa2b4f422d36",
+      "sourceBlobSha": "7b86edabb28061a4aa1e0afcb3d7add1b6967a29"
+    },
+    {
+      "type": "agent",
+      "id": "principal-devops-engineer",
+      "path": "catalog/agents/principal-devops-engineer.json",
+      "classification": "community",
+      "license": "AGPL-3.0-only",
+      "contentSha256": "e4e246a19a69c48aa2ffcb2ff1eb6f5bb60f986940fe7a1f6a735a92132b090e",
+      "sourceRepository": "HUBTECH-DEV/hubicg-community",
+      "sourceVisibility": "public",
+      "sourcePath": ".hubicg/roles/principal-devops-engineer.json",
+      "sourceCommitSha": "96571dd232d3ce744705c76b5062aa2b4f422d36",
+      "sourceBlobSha": "453ababedcc597c69efcd0209724d272d376bae3"
+    },
+    {
+      "type": "agent",
+      "id": "principal-git-engineer",
+      "path": "catalog/agents/principal-git-engineer.json",
+      "classification": "community",
+      "license": "AGPL-3.0-only",
+      "contentSha256": "ddc01e92978abd48ccc980c06f6685cd87e047e0a9e754b253cd02c7a6c737ac",
+      "sourceRepository": "HUBTECH-DEV/hubicg-community",
+      "sourceVisibility": "public",
+      "sourcePath": ".hubicg/roles/principal-git-engineer.json",
+      "sourceCommitSha": "96571dd232d3ce744705c76b5062aa2b4f422d36",
+      "sourceBlobSha": "bccb22efa0366dc977ce4c4c7baa919bd4079d64"
+    },
+    {
+      "type": "agent",
+      "id": "software-development",
+      "path": "catalog/agents/software-development.json",
+      "classification": "community",
+      "license": "AGPL-3.0-only",
+      "contentSha256": "12f850f97ee2a2a5de0f4d7c9f4a3faafe34e2dc80d79ed5c83c0cb0184a7469",
+      "sourceRepository": "HUBTECH-DEV/hubicg-community",
+      "sourceVisibility": "public",
+      "sourcePath": ".hubicg/roles/software-development.json",
+      "sourceCommitSha": "96571dd232d3ce744705c76b5062aa2b4f422d36",
+      "sourceBlobSha": "36b21375a563282ff216baf41f42fa4508172013"
+    },
+    {
+      "type": "agent",
+      "id": "solution-architecture",
+      "path": "catalog/agents/solution-architecture.json",
+      "classification": "community",
+      "license": "AGPL-3.0-only",
+      "contentSha256": "e8ebca2b393b25ca3fdc7e7a081974343ac32c491baa93249389eefa9eaae2f2",
+      "sourceRepository": "HUBTECH-DEV/hubicg-community",
+      "sourceVisibility": "public",
+      "sourcePath": ".hubicg/roles/solution-architecture.json",
+      "sourceCommitSha": "96571dd232d3ce744705c76b5062aa2b4f422d36",
+      "sourceBlobSha": "2d84f847075b7b8a93634a23c0883e46508ac36a"
+    }
+  ]
+}
