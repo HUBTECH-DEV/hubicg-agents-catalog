@@ -8,7 +8,7 @@ tenant-specific or proprietary implementation and product features.
 
 ## Current catalog
 
-- Five public agent definitions imported from `HUBTECH-DEV/hubicg-community`.
+- 24 public agent definitions imported from `HUBTECH-DEV/hubicg-community`.
 - No public skills have been approved yet; `catalog/skills/` is intentionally empty apart from its
   scope document.
 - Every published definition is listed in `catalog/manifest.json` with immutable source and content

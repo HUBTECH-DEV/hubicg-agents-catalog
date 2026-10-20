@@ -20,3 +20,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validate public catalog boundary and provenance
         run: python tools/validate_catalog.py
+      - name: Test provenance rejection and approved imports
+        run: python -m unittest discover -s tests -v

@@ -18,7 +18,10 @@ HEX64 = re.compile(r"^[0-9a-f]{64}$")
 SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 SOURCE_REPOSITORY = "HUBTECH-DEV/hubicg-community"
-SOURCE_COMMIT = "96571dd232d3ce744705c76b5062aa2b4f422d36"
+SOURCE_COMMITS = {
+    "96571dd232d3ce744705c76b5062aa2b4f422d36",  # Original five definitions.
+    "51cc93827485ec0e6849cadc8561dfbc8400a553",  # Community promotion PR #143.
+}
 SOURCE_PARENT = PurePosixPath(".hubicg/roles")
 
 FORBIDDEN_TOP_LEVEL = {
@@ -63,7 +66,7 @@ def load_json(path: Path) -> object:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
-        raise CatalogError(f"JSON inválido em {path.relative_to(ROOT)}: {exc}") from exc
+        raise CatalogError(f"JSON invÃ¡lido em {path.relative_to(ROOT)}: {exc}") from exc
 
 
 def digest(path: Path) -> str:
@@ -79,19 +82,19 @@ def validate_schema_instance(data: object, schema: object, relative: str) -> Non
     """Validate the supported draft-2020-12 subset without external dependencies."""
 
     if not isinstance(data, dict) or not isinstance(schema, dict):
-        raise CatalogError(f"{relative}: definição/schema deve ser objeto JSON")
+        raise CatalogError(f"{relative}: definiÃ§Ã£o/schema deve ser objeto JSON")
     properties = schema.get("properties")
     required = schema.get("required")
     if not isinstance(properties, dict) or not isinstance(required, list):
-        raise CatalogError("schema público sem properties/required válidos")
+        raise CatalogError("schema pÃºblico sem properties/required vÃ¡lidos")
 
     missing = [field for field in required if field not in data]
     if missing:
-        raise CatalogError(f"{relative}: campos obrigatórios ausentes: {', '.join(missing)}")
+        raise CatalogError(f"{relative}: campos obrigatÃ³rios ausentes: {', '.join(missing)}")
     if schema.get("additionalProperties") is False:
         extra = sorted(set(data) - set(properties))
         if extra:
-            raise CatalogError(f"{relative}: campos não permitidos: {', '.join(extra)}")
+            raise CatalogError(f"{relative}: campos nÃ£o permitidos: {', '.join(extra)}")
 
     for field, value in data.items():
         rule = properties.get(field)
@@ -104,9 +107,9 @@ def validate_schema_instance(data: object, schema: object, relative: str) -> Non
             if not isinstance(value, str):
                 raise CatalogError(f"{relative}: {field} deve ser string")
             if len(value) < rule.get("minLength", 0) or len(value) > rule.get("maxLength", sys.maxsize):
-                raise CatalogError(f"{relative}: tamanho inválido em {field}")
+                raise CatalogError(f"{relative}: tamanho invÃ¡lido em {field}")
             if "pattern" in rule and re.fullmatch(rule["pattern"], value) is None:
-                raise CatalogError(f"{relative}: formato inválido em {field}")
+                raise CatalogError(f"{relative}: formato invÃ¡lido em {field}")
         elif expected_type == "array":
             if not isinstance(value, list):
                 raise CatalogError(f"{relative}: {field} deve ser array")
@@ -117,16 +120,16 @@ def validate_schema_instance(data: object, schema: object, relative: str) -> Non
             item_rule = rule.get("items", {})
             for item in value:
                 if item_rule.get("type") == "string" and not isinstance(item, str):
-                    raise CatalogError(f"{relative}: item não textual em {field}")
+                    raise CatalogError(f"{relative}: item nÃ£o textual em {field}")
                 if "pattern" in item_rule and re.fullmatch(item_rule["pattern"], item) is None:
-                    raise CatalogError(f"{relative}: item inválido em {field}")
+                    raise CatalogError(f"{relative}: item invÃ¡lido em {field}")
 
 
 def ensure_repository_boundary() -> None:
     present = {child.name for child in ROOT.iterdir()}
     forbidden = sorted(present & FORBIDDEN_TOP_LEVEL)
     if forbidden:
-        raise CatalogError(f"diretórios privados/runtime proibidos: {', '.join(forbidden)}")
+        raise CatalogError(f"diretÃ³rios privados/runtime proibidos: {', '.join(forbidden)}")
 
     for path in ROOT.rglob("*"):
         if ".git" in path.parts:
@@ -138,41 +141,41 @@ def ensure_repository_boundary() -> None:
 def validate_asset(entry: dict[str, object]) -> str:
     missing = sorted(REQUIRED_ENTRY_FIELDS - entry.keys())
     if missing:
-        raise CatalogError(f"entrada sem campos obrigatórios: {', '.join(missing)}")
+        raise CatalogError(f"entrada sem campos obrigatÃ³rios: {', '.join(missing)}")
 
     item_type = entry["type"]
     item_id = entry["id"]
     relative = entry["path"]
     if item_type != "agent":
-        raise CatalogError("skills permanecem bloqueadas até a aprovação de um schema específico")
+        raise CatalogError("skills permanecem bloqueadas atÃ© a aprovaÃ§Ã£o de um schema especÃ­fico")
     if not isinstance(item_id, str) or not SLUG.fullmatch(item_id):
-        raise CatalogError(f"id inválido: {item_id!r}")
+        raise CatalogError(f"id invÃ¡lido: {item_id!r}")
     if not isinstance(relative, str):
-        raise CatalogError(f"path inválido para {item_id}")
+        raise CatalogError(f"path invÃ¡lido para {item_id}")
 
     pure = PurePosixPath(relative)
     expected_parent = PurePosixPath("catalog") / f"{item_type}s"
     if pure.is_absolute() or ".." in pure.parts or pure.parent != expected_parent:
-        raise CatalogError(f"path fora do catálogo {item_type}: {relative}")
+        raise CatalogError(f"path fora do catÃ¡logo {item_type}: {relative}")
     if pure.suffix != ".json" or pure.stem != item_id:
         raise CatalogError(f"path e id divergem: {relative} / {item_id}")
 
     if entry["classification"] != "community":
-        raise CatalogError(f"{item_id}: classificação deve ser community")
+        raise CatalogError(f"{item_id}: classificaÃ§Ã£o deve ser community")
     if entry["license"] != "AGPL-3.0-only":
-        raise CatalogError(f"{item_id}: licença inesperada")
+        raise CatalogError(f"{item_id}: licenÃ§a inesperada")
     if entry["sourceVisibility"] != "public":
-        raise CatalogError(f"{item_id}: fonte não pública")
+        raise CatalogError(f"{item_id}: fonte nÃ£o pÃºblica")
     if entry["sourceRepository"] != SOURCE_REPOSITORY:
-        raise CatalogError(f"{item_id}: repositório de origem não aprovado")
+        raise CatalogError(f"{item_id}: repositÃ³rio de origem nÃ£o aprovado")
     if not isinstance(entry["sourceCommitSha"], str) or not HEX40.fullmatch(entry["sourceCommitSha"]):
-        raise CatalogError(f"{item_id}: sourceCommitSha inválido")
-    if entry["sourceCommitSha"] != SOURCE_COMMIT:
-        raise CatalogError(f"{item_id}: sourceCommitSha não aprovado")
+        raise CatalogError(f"{item_id}: sourceCommitSha invÃ¡lido")
+    if entry["sourceCommitSha"] not in SOURCE_COMMITS:
+        raise CatalogError(f"{item_id}: sourceCommitSha nÃ£o aprovado")
     if not isinstance(entry["sourceBlobSha"], str) or not HEX40.fullmatch(entry["sourceBlobSha"]):
-        raise CatalogError(f"{item_id}: sourceBlobSha inválido")
+        raise CatalogError(f"{item_id}: sourceBlobSha invÃ¡lido")
     if not isinstance(entry["contentSha256"], str) or not HEX64.fullmatch(entry["contentSha256"]):
-        raise CatalogError(f"{item_id}: contentSha256 inválido")
+        raise CatalogError(f"{item_id}: contentSha256 invÃ¡lido")
 
     path = ROOT / Path(*pure.parts)
     if not path.is_file():
@@ -184,16 +187,16 @@ def validate_asset(entry: dict[str, object]) -> str:
 
     source_path = entry["sourcePath"]
     if not isinstance(source_path, str):
-        raise CatalogError(f"{item_id}: sourcePath inválido")
+        raise CatalogError(f"{item_id}: sourcePath invÃ¡lido")
     source_pure = PurePosixPath(source_path)
     if source_pure.parent != SOURCE_PARENT or source_pure.name != pure.name:
-        raise CatalogError(f"{item_id}: sourcePath fora da origem pública aprovada")
+        raise CatalogError(f"{item_id}: sourcePath fora da origem pÃºblica aprovada")
 
     raw = path.read_text(encoding="utf-8")
     lowered = raw.lower()
     forbidden = [term for term in FORBIDDEN_ASSET_TERMS if term in lowered]
     if forbidden or EMAIL.search(raw):
-        raise CatalogError(f"{relative}: possível identificador privado, e-mail ou segredo")
+        raise CatalogError(f"{relative}: possÃ­vel identificador privado, e-mail ou segredo")
 
     data = load_json(path)
     schema = load_json(AGENT_SCHEMA_PATH)
@@ -202,10 +205,10 @@ def validate_asset(entry: dict[str, object]) -> str:
     if data.get("id") != item_id or data.get("schemaVersion") != "1.0":
         raise CatalogError(f"{relative}: id/schemaVersion divergem do manifesto")
     if item_type == "agent" and not REQUIRED_AGENT_FIELDS <= data.keys():
-        raise CatalogError(f"{relative}: campos obrigatórios de agent ausentes")
+        raise CatalogError(f"{relative}: campos obrigatÃ³rios de agent ausentes")
     for field in ("name", "instructions"):
         if not isinstance(data.get(field), str) or not data[field].strip():
-            raise CatalogError(f"{relative}: {field} deve ser texto não vazio")
+            raise CatalogError(f"{relative}: {field} deve ser texto nÃ£o vazio")
     return relative
 
 
@@ -214,9 +217,9 @@ def main() -> int:
         ensure_repository_boundary()
         manifest = load_json(MANIFEST_PATH)
         if not isinstance(manifest, dict) or manifest.get("schemaVersion") != "1.0":
-            raise CatalogError("manifesto ausente ou schemaVersion inválido")
+            raise CatalogError("manifesto ausente ou schemaVersion invÃ¡lido")
         if manifest.get("license") != "AGPL-3.0-only":
-            raise CatalogError("licença do catálogo deve ser AGPL-3.0-only")
+            raise CatalogError("licenÃ§a do catÃ¡logo deve ser AGPL-3.0-only")
         entries = manifest.get("entries")
         if not isinstance(entries, list):
             raise CatalogError("entries deve ser uma lista")
@@ -251,7 +254,7 @@ def main() -> int:
         print(f"catalog-policy: FAIL: {exc}", file=sys.stderr)
         return 1
 
-    print(f"catalog-policy: OK: {len(paths)} definição(ões) pública(s) validada(s)")
+    print(f"catalog-policy: OK: {len(paths)} definiÃ§Ã£o(Ãµes) pÃºblica(s) validada(s)")
     return 0
 
 
